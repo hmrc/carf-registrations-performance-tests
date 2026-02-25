@@ -20,6 +20,7 @@ import io.gatling.core.Predef._
 import io.gatling.core.session.Expression
 import io.gatling.core.structure.ChainBuilder
 import io.gatling.http.Predef._
+import io.gatling.http.request.builder.HttpRequestBuilder
 import uk.gov.hmrc.performance.conf.ServicesConfiguration
 
 object RegistrationRequests extends ServicesConfiguration {
@@ -30,52 +31,55 @@ object RegistrationRequests extends ServicesConfiguration {
 
   def inputSelectorByName(name: String): Expression[String] = s"input[name='$name']"
 
-  def getAuthLoginPage: ChainBuilder =
-    exec(
-      http("Get Auth login page")
-        .get(baseUrlAuth + "/auth-login-stub/gg-sign-in")
-        .check(status.is(200))
-    )
+  val getAuthLoginPage: HttpRequestBuilder =
+    http("Get Auth login page")
+      .get(baseUrlAuth + "/auth-login-stub/gg-sign-in")
+      .check(status.is(200))
 
-  val postOrganisationWithCtUtrAuthLoginPage: ChainBuilder =
-    exec(
-      http("Enter Auth login credentials")
-        .post(baseUrlAuth + "/auth-login-stub/gg-sign-in")
-        .formParam("authorityId", "")
-        .formParam("credentialStrength", "strong")
-//        .formParam("excludeGnapToken", "false")
-        .formParam("confidenceLevel", "50")
-        .formParam("affinityGroup", "Organisation")
-//        .formParam("email", "user@test.com")
-//        .formParam("credentialRole", "User")
-        .formParam("presets-dropdown", "IR-CT")
-        .formParam("enrolment[4].name", "IR-CT")
-        .formParam("enrolment[4].taxIdentifier[0].name", "UTR")
-        .formParam("enrolment[4].taxIdentifier[0].value", "1112345678")
-        .formParam("enrolment[4].state", "Activated")
-        .formParam("redirectionUrl", baseUrl + route)
-        .check(status.is(303))
-        .check(header("Location").find.saveAs("redirectLocation"))
-        .check(status.saveAs("responseStatus"))
-        .check(header("Location").is(baseUrl + route).saveAs("AuthLoginForCarf"))
-        .check(bodyString.saveAs("responseBodyForAuthLogin"))
-        .check(header("Set-Cookie").saveAs("setCookieHeader"))
-    )
+  val postAuthLoginPage: HttpRequestBuilder =
+    http("Enter Auth login credentials")
+      .post(baseUrlAuth + "/auth-login-stub/gg-sign-in")
+      .formParam("authorityId", "")
+      .formParam("credentialStrength", "strong")
+      .formParam("excludeGnapToken", "false")
+      .formParam("confidenceLevel", "50")
+      .formParam("credentialRole", "User")
+      .formParam("additionalInfo.emailVerified", "N/A")
+      .formParam("enrolment[4].name", "IR-CT")
+      .formParam("enrolment[4].taxIdentifier[0].name", "UTR")
+      .formParam("enrolment[4].taxIdentifier[0].value", "12345")
+      .formParam("enrolment[4].state", "Activated")
+      .formParam("email", "user@test.com")
+      .formParam("affinityGroup", "Organisation")
+      .formParam("redirectionUrl", baseUrl + route)
+      .check(status.is(303))
+      .check(
+        header("Location")
+          .is(baseUrl + route)
+          .saveAs("AuthLoginForCRS")
+      )
 
-  val postOrganisationWithCtUtrAuthLoginPageWithPrint: ChainBuilder =
-    exec(postOrganisationWithCtUtrAuthLoginPage)
-      .exec { session =>
-        println(s"🔍 DEBUG1: Location header = ${session("redirectLocation").asOption[String].getOrElse("NOT FOUND")}")
-        println(s"🔍 DEBUG2: Response status = ${session("responseStatus").asOption[Int].getOrElse(-1)}")
-        println(
-          s"🔍 DEBUG2: Response body = ${session("responseBodyForAuthLogin").asOption[String].getOrElse("AUTH RESPONSE BODY NOT FOUND")}"
-        )
-        println("🔍 Set-Cookie Header = " + session("setCookieHeader").asOption[String].getOrElse("NOT FOUND"))
-        println("&&&&&&&&&&&&&&&&&&&&&&&&" + session)
-        println("Test URL = " + baseUrl + route)
-        session
-      }
-  val postIndividualLoginPage: ChainBuilder                         =
+  val getIsThisYourBusinessPage: HttpRequestBuilder =
+    http("Get Is This Your Business")
+      .get(baseUrl + route + "/register/is-this-your-business")
+      .check(status.is(200))
+//      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val getIndexPage: HttpRequestBuilder =
+    http("Get Index Page")
+      .get(baseUrl + route)
+      .check(status.is(303))
+//      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postIsThisYourBusinessPage: HttpRequestBuilder =
+    http("Post Is This Your Business")
+      .post(baseUrl + route + "/register/is-this-your-business")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .formParam("value", "true")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/your-contact-details").saveAs("YourContactDetails"))
+
+  val postIndividualLoginPage: ChainBuilder       =
     exec(
       http("Enter Auth login credentials for Individual")
         .post(baseUrlAuth + "/auth-login-stub/gg-sign-in")
@@ -90,7 +94,7 @@ object RegistrationRequests extends ServicesConfiguration {
         .check(status.is(303))
         .check(header("Location").find.saveAs("redirectLocation"))
     )
-  val getIndividualRegistrationType: ChainBuilder                   =
+  val getIndividualRegistrationType: ChainBuilder =
     exec(
       http("Get Individual Registration Type Page")
         .get(baseUrl + route + "/register/individual-registration-type")
@@ -108,18 +112,6 @@ object RegistrationRequests extends ServicesConfiguration {
         session
       }
 
-  val getIsThisYourBusinessPage: ChainBuilder =
-    exec(
-      http("Get Is This Your Business Page")
-        .get(baseUrl + route + "/register/is-this-your-business")
-        .check(status.is(303))
-        .check(header("Location").find.saveAs("redirectLocationForIsYourBusiness"))
-        .check(bodyString.saveAs("responseBodyForBusinessPage"))
-        .check(status.saveAs("responseStatus"))
-        .check(header("Set-Cookie").saveAs("setCookieHeader"))
-
-//        .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
-    )
   val getIsThisYourBusinessPageWithPrint: ChainBuilder =
     exec(getIsThisYourBusinessPage)
       .exec { session =>
