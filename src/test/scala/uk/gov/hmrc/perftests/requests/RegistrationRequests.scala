@@ -18,7 +18,6 @@ package uk.gov.hmrc.perftests.requests
 
 import io.gatling.core.Predef._
 import io.gatling.core.session.Expression
-import io.gatling.core.structure.ChainBuilder
 import io.gatling.http.Predef._
 import io.gatling.http.request.builder.HttpRequestBuilder
 import uk.gov.hmrc.performance.conf.ServicesConfiguration
@@ -26,7 +25,7 @@ import uk.gov.hmrc.performance.conf.ServicesConfiguration
 object RegistrationRequests extends ServicesConfiguration {
 
   val baseUrl: String     = baseUrlFor("carf-registration-frontend")
-  val route: String       = "/register-for-carf"
+  val route: String       = "/register-for-cryptoasset-reporting"
   val baseUrlAuth: String = baseUrlFor("auth-frontend")
 
   def inputSelectorByName(name: String): Expression[String] = s"input[name='$name']"
@@ -36,8 +35,8 @@ object RegistrationRequests extends ServicesConfiguration {
       .get(baseUrlAuth + "/auth-login-stub/gg-sign-in")
       .check(status.is(200))
 
-  val postAuthLoginPage: HttpRequestBuilder =
-    http("Enter Auth login credentials")
+  val postAuthLoginPageOrgAutoMatchedCtUtr: HttpRequestBuilder =
+    http("Post Auth login page for Auto matched CT UTR")
       .post(baseUrlAuth + "/auth-login-stub/gg-sign-in")
       .formParam("authorityId", "")
       .formParam("credentialStrength", "strong")
@@ -53,79 +52,173 @@ object RegistrationRequests extends ServicesConfiguration {
       .formParam("affinityGroup", "Organisation")
       .formParam("redirectionUrl", baseUrl + route)
       .check(status.is(303))
-      .check(
-        header("Location")
-          .is(baseUrl + route)
-          .saveAs("AuthLoginForCRS")
-      )
-
-  val getIsThisYourBusinessPage: HttpRequestBuilder =
-    http("Get Is This Your Business")
-      .get(baseUrl + route + "/register/is-this-your-business")
-      .check(status.is(200))
-//      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(header("Location").is(baseUrl + route).saveAs("AuthLoginForCarf"))
 
   val getIndexPage: HttpRequestBuilder =
     http("Get Index Page")
       .get(baseUrl + route)
       .check(status.is(303))
-//      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val getIsThisYourBusinessPage: HttpRequestBuilder =
+    http("Get Is This Your Business Page")
+      .get(baseUrl + route + "/register/is-this-your-business")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
   val postIsThisYourBusinessPage: HttpRequestBuilder =
-    http("Post Is This Your Business")
+    http("Post Is This Your Business Page")
       .post(baseUrl + route + "/register/is-this-your-business")
-      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", "true")
       .check(status.is(303))
       .check(header("Location").is(route + "/register/your-contact-details").saveAs("YourContactDetails"))
 
-  val postIndividualLoginPage: ChainBuilder       =
-    exec(
-      http("Enter Auth login credentials for Individual")
-        .post(baseUrlAuth + "/auth-login-stub/gg-sign-in")
-        .formParam("redirectionUrl", baseUrl + route)
-        .formParam("authorityId", "")
-        .formParam("credentialStrength", "strong")
-        .formParam("excludeGnapToken", "false")
-        .formParam("confidenceLevel", "50")
-        .formParam("affinityGroup", "Individual")
-        .formParam("email", "user@test.com")
-        .formParam("credentialRole", "User")
-        .check(status.is(303))
-        .check(header("Location").find.saveAs("redirectLocation"))
-    )
-  val getIndividualRegistrationType: ChainBuilder =
-    exec(
-      http("Get Individual Registration Type Page")
-        .get(baseUrl + route + "/register/individual-registration-type")
-        .check(status.is(303))
-        .check(header("Location").find.saveAs("redirectLocationForIndividualRegistrationType"))
-    )
+  val getYourContactDetailsPage: HttpRequestBuilder =
+    http("Get Your Contact Details Page")
+      .get(baseUrl + route + "/register/your-contact-details")
+      .check(status.is(200))
 
-  val getIndividualRegistrationTypeWithPrint: ChainBuilder =
-    exec(getIndividualRegistrationType)
-      .exec { session =>
-        println(
-          s"🔍 DEBUG: Location header = ${session("redirectLocationForIndividualRegistrationType").asOption[String].getOrElse("HEADER NOT FOUND")}"
-        )
-        println("Individual block executed")
-        session
-      }
+  val getContactNamePage: HttpRequestBuilder =
+    http("Get Contact Name Page")
+      .get(baseUrl + route + "/register/contact-name")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
-  val getIsThisYourBusinessPageWithPrint: ChainBuilder =
-    exec(getIsThisYourBusinessPage)
-      .exec { session =>
-        println(
-          s"🔍 DEBUG: Location header = ${session("redirectLocationForIsYourBusiness").asOption[String].getOrElse("HEADER NOT FOUND")}"
-        )
-        println("****************" + session)
-        println("Test URL2 = " + baseUrl + route + "/register/is-this-your-business")
-        println(
-          s"🔍 DEBUG2: Response body = ${session("responseBodyForBusinessPage").asOption[String].getOrElse("RESPONSE BODY NOT FOUND")}"
-        )
-        println("🔍 Response Status = " + session("responseStatus").asOption[Int].getOrElse(-1))
-        println(s"Set-Cookie Header = ${session("setCookieHeader").asOption[String].getOrElse("2 COOKIE NOT FOUND")}")
+  val postContactNamePage: HttpRequestBuilder =
+    http("Post Contact Name Page")
+      .post(baseUrl + route + "/register/contact-name")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "Test Team")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/email").saveAs("Email"))
 
-        session
-      }
+  val getEmailPage: HttpRequestBuilder =
+    http("Get Email Page")
+      .get(baseUrl + route + "/register/email")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postEmailPage: HttpRequestBuilder =
+    http("Post Email Page")
+      .post(baseUrl + route + "/register/email")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "carfteam@gmail.com")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/have-phone").saveAs("HavePhone"))
+
+  val getHavePhonePage: HttpRequestBuilder =
+    http("Get Have Phone Page")
+      .get(baseUrl + route + "/register/have-phone")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postHavePhonePage: HttpRequestBuilder =
+    http("Post Have Phone Page")
+      .post(baseUrl + route + "/register/have-phone")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "true")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/phone").saveAs("Phone"))
+
+  val getPhonePage: HttpRequestBuilder =
+    http("Get Phone Page")
+      .get(baseUrl + route + "/register/phone")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postPhonePage: HttpRequestBuilder =
+    http("Post Phone Page")
+      .post(baseUrl + route + "/register/phone")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "1234567890")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/have-second-contact").saveAs("HaveSecondContact"))
+
+  val getHaveSecondContactPage: HttpRequestBuilder =
+    http("Get Have Second Contact Page")
+      .get(baseUrl + route + "/register/have-second-contact")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postHaveSecondContactPage: HttpRequestBuilder =
+    http("Post Have Second Contact Page")
+      .post(baseUrl + route + "/register/have-second-contact")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "true")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/second-contact-name").saveAs("SecondContactName"))
+
+  val getSecondContactNamePage: HttpRequestBuilder =
+    http("Get Second Contact Name Page")
+      .get(baseUrl + route + "/register/second-contact-name")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postSecondContactNamePage: HttpRequestBuilder =
+    http("Post Second Contact Name Page")
+      .post(baseUrl + route + "/register/second-contact-name")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "Test Second")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/second-contact-email").saveAs("SecondContactEmail"))
+
+  val getSecondContactEmailPage: HttpRequestBuilder =
+    http("Get Second Contact Email Page")
+      .get(baseUrl + route + "/register/second-contact-email")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postSecondContactEmailPage: HttpRequestBuilder =
+    http("Post Second Contact Email Page")
+      .post(baseUrl + route + "/register/second-contact-email")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "Carftestsecond@gmail.com")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/second-contact-have-phone").saveAs("SecondContactHavePhone"))
+
+  val getSecondContactHavePhonePage: HttpRequestBuilder =
+    http("Get Second Contact Have Phone Page")
+      .get(baseUrl + route + "/register/second-contact-have-phone")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postSecondContactHavePhonePage: HttpRequestBuilder =
+    http("Post Second Contact Have Phone Page")
+      .post(baseUrl + route + "/register/second-contact-have-phone")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "true")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/second-contact-phone").saveAs("SecondContactPhone"))
+
+  val getSecondContactPhonePage: HttpRequestBuilder =
+    http("Get Second Contact Phone Page")
+      .get(baseUrl + route + "/register/second-contact-phone")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postSecondContactPhonePage: HttpRequestBuilder =
+    http("Post Second Contact Phone Page")
+      .post(baseUrl + route + "/register/second-contact-phone")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "1234567890")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/check-answers").saveAs("CheckYourAnswer"))
+
+  val getCheckAnswerPage: HttpRequestBuilder =
+    http("Get Check Answer Page")
+      .get(baseUrl + route + "/register/check-answers")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postCheckAnswerPage: HttpRequestBuilder =
+    http("Post Check Answer Page")
+      .post(baseUrl + route + "/register/check-answers")
+      .formParam("csrfToken", "#{csrfToken}")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/confirm-registration").saveAs("ConfirmRegistration"))
+
+  val getConfirmRegistrationPage: HttpRequestBuilder =
+    http("Get Confirm Registration Page")
+      .get(baseUrl + route + "/register/confirm-registration")
+      .check(status.is(200))
 }

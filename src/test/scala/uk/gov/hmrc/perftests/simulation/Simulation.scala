@@ -22,16 +22,34 @@ import uk.gov.hmrc.perftests.requests._
 
 class Simulation extends PerformanceTestRunner {
 
-  setup("AuthLogin", "logging in via auth").withRequests (
+  setup("OrgWithCtAutoMatchUtr", "Org with Id (CT-UTR) Journey").withChainedActions(
     getAuthLoginPage,
-    postAuthLoginPage
-  )
-
-  setup("OrgWithCtAutoMatchUtr", "Org with Id (CT-UTR) Journey").withActions (
+    postAuthLoginPageOrgAutoMatchedCtUtr,
     getIndexPage,
-    getIsThisYourBusinessPage
-//    postIsThisYourBusinessPage
+    getIsThisYourBusinessPage,
+    postIsThisYourBusinessPage,
+    getYourContactDetailsPage,
+    getContactNamePage,
+    postContactNamePage,
+    getEmailPage,
+    postEmailPage,
+    getHavePhonePage,
+    postHavePhonePage,
+    getPhonePage,
+    postPhonePage,
+    getHaveSecondContactPage,
+    postHaveSecondContactPage,
+    getSecondContactNamePage,
+    postSecondContactNamePage,
+    getSecondContactEmailPage,
+    postSecondContactEmailPage,
+    getSecondContactHavePhonePage,
+    postSecondContactHavePhonePage,
+    getSecondContactPhonePage,
+    postSecondContactPhonePage,
+    getCheckAnswerPage,
+    postCheckAnswerPage,
+    getConfirmRegistrationPage
   )
-
   runSimulation()
 }

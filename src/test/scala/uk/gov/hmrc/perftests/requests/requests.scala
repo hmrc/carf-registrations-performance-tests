@@ -33,5 +33,4 @@ package object requests extends Configuration {
   implicit class AugmentJourneyParts(j: JourneyPart) {
     def withChainedActions(builders: Seq[ActionBuilder]*): JourneyPart = j.withActions(builders.flatten: _*)
   }
-
 }
