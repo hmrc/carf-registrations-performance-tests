@@ -22,7 +22,7 @@ import io.gatling.http.Predef._
 import io.gatling.http.request.builder.HttpRequestBuilder
 import uk.gov.hmrc.performance.conf.ServicesConfiguration
 
-object RegistrationRequests extends ServicesConfiguration {
+object OrgRegistrationRequests extends ServicesConfiguration {
 
   val baseUrl: String     = baseUrlFor("carf-registration-frontend")
   val route: String       = "/register-for-cryptoasset-reporting"
