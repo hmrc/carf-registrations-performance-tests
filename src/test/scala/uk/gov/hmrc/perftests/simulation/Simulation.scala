@@ -18,14 +18,15 @@ package uk.gov.hmrc.perftests.simulation
 
 import uk.gov.hmrc.performance.simulation.PerformanceTestRunner
 import uk.gov.hmrc.perftests.requests.IndRegistrationRequests._
-import uk.gov.hmrc.perftests.requests.OrgRegistrationRequests.{getConfirmRegistrationPage, postOrganisationRegistrationTypePage, _}
+import uk.gov.hmrc.perftests.requests.OrgRegistrationRequests.{getConfirmRegistrationPage, _}
 import uk.gov.hmrc.perftests.requests._
 
 class Simulation extends PerformanceTestRunner {
 
   setup("OrgWithCtUtrAutoMatched", "Organisation with Id (CT-UTR) Automatched Journey").withChainedActions(
     getAuthLoginPage,
-    postAuthLoginPageOrgAutoMatchedCtUtr,
+    //postAuthLoginPageOrgAutoMatchedCtUtr,
+    postAuthLoginPage("automatched"),
     getIndexPage,
     getIsThisYourBusinessPage,
     postIsThisYourBusinessPage("org"),
@@ -55,7 +56,8 @@ class Simulation extends PerformanceTestRunner {
 
   setup("OrgWithCtUtrNonAutoMatched", "Organisation with Id (CT-UTR) Non-automatched Journey").withChainedActions(
     getAuthLoginPage,
-    postAuthLoginPageOrgNonAutoMatchedCtUtr,
+    //postAuthLoginPageOrgNonAutoMatchedCtUtr,
+    postAuthLoginPage("nonautomatched"),
     getIndexPage,
     getOrganisationRegistrationTypePage,
     postOrganisationRegistrationTypePage,
@@ -95,7 +97,8 @@ class Simulation extends PerformanceTestRunner {
 
   setup("IndWithNino", "Individual with Nino Journey").withChainedActions(
     getAuthLoginPage,
-    postAuthLoginPageIndividualWithNino,
+    //postAuthLoginPage,
+    postAuthLoginPage("individual"),
     getIndexPage,
     getIndividualRegistrationType,
     postIndividualRegistrationTypePage("ind"),
@@ -121,7 +124,8 @@ class Simulation extends PerformanceTestRunner {
 
   setup("SoleTraderWithUtr", "Sole Trader with Utr Journey").withChainedActions(
     getAuthLoginPage,
-    postAuthLoginPage,
+    //postAuthLoginPage,
+    postAuthLoginPage("individual"),
     getIndexPage,
     getIndividualRegistrationType,
     postIndividualRegistrationTypePage("st"),

@@ -54,6 +54,42 @@ object OrgRegistrationRequests extends ServicesConfiguration {
       .check(status.is(303))
       .check(header("Location").is(baseUrl + route).saveAs("AuthLoginForCarf"))
 
+  def postAuthLoginPage(userType: String): HttpRequestBuilder = {
+    val (requestName, affinityGroup, hasCtUtr) = userType match {
+      case "automatched" => ("Post Auth login page for Auto matched Org", "Organisation", true)
+      case "nonautomatched" => ("Post Auth login page for Non Auto matched Org with CT UTR", "Organisation", false)
+      case "individual" => ("Post Auth login page", "Individual", false)
+      case _ => ("Post Auth login page", "Individual", false)
+    }
+
+    val baseRequest = http(requestName)
+      .post(baseUrlAuth + "/auth-login-stub/gg-sign-in")
+      .formParam("authorityId", "")
+      .formParam("credentialStrength", "strong")
+      .formParam("excludeGnapToken", "false")
+      .formParam("confidenceLevel", "50")
+      .formParam("credentialRole", "User")
+      .formParam("additionalInfo.emailVerified", "N/A")
+      .formParam("email", "user@test.com")
+      .formParam("affinityGroup", affinityGroup)
+      .formParam("redirectionUrl", baseUrl + route)
+
+    val finalRequest = if (hasCtUtr) {
+      baseRequest
+        .formParam("enrolment[4].name", "IR-CT")
+        .formParam("enrolment[4].taxIdentifier[0].name", "UTR")
+        .formParam("enrolment[4].taxIdentifier[0].value", "12345")
+        .formParam("enrolment[4].state", "Activated")
+    } else {
+      baseRequest
+    }
+
+    finalRequest
+      .check(status.is(303))
+      .check(header("Location").is(baseUrl + route).saveAs("AuthLoginForCarf"))
+  }
+
+
   val postAuthLoginPageOrgNonAutoMatchedCtUtr: HttpRequestBuilder =
     http("Post Auth login page for Non Auto matched Org with CT UTR")
       .post(baseUrlAuth + "/auth-login-stub/gg-sign-in")

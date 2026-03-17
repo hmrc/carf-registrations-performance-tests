@@ -18,7 +18,6 @@ package uk.gov.hmrc.perftests.requests
 
 import io.gatling.core.Predef._
 import io.gatling.core.session.Expression
-import io.gatling.core.structure.ChainBuilder
 import io.gatling.http.Predef._
 import io.gatling.http.request.builder.HttpRequestBuilder
 import uk.gov.hmrc.performance.conf.ServicesConfiguration
@@ -31,21 +30,7 @@ object IndRegistrationRequests extends ServicesConfiguration {
 
   def inputSelectorByName(name: String): Expression[String] = s"input[name='$name']"
 
-  val postAuthLoginPageIndividualWithNino: HttpRequestBuilder =
-    http("Post Auth login page for Individual with NINO")
-      .post(baseUrlAuth + "/auth-login-stub/gg-sign-in")
-      .formParam("authorityId", "")
-      .formParam("credentialStrength", "strong")
-      .formParam("excludeGnapToken", "false")
-      .formParam("confidenceLevel", "50")
-      .formParam("credentialRole", "User")
-      .formParam("email", "user@test.com")
-      .formParam("affinityGroup", "Individual")
-      .formParam("redirectionUrl", baseUrl + route)
-      .check(status.is(303))
-      .check(header("Location").is(baseUrl + route).saveAs("AuthLoginForCarf"))
-
-  val postAuthLoginPage: HttpRequestBuilder =
+  /*val postAuthLoginPage: HttpRequestBuilder =
     http("Post Auth login page")
       .post(baseUrlAuth + "/auth-login-stub/gg-sign-in")
       .formParam("authorityId", "")
@@ -57,7 +42,7 @@ object IndRegistrationRequests extends ServicesConfiguration {
       .formParam("affinityGroup", "Individual")
       .formParam("redirectionUrl", baseUrl + route)
       .check(status.is(303))
-      .check(header("Location").is(baseUrl + route).saveAs("AuthLoginForCarf"))
+      .check(header("Location").is(baseUrl + route).saveAs("AuthLoginForCarf"))*/
 
   val getIndividualRegistrationType: HttpRequestBuilder =
     http("Get Individual Registration Type Page")
@@ -197,8 +182,4 @@ object IndRegistrationRequests extends ServicesConfiguration {
       .check(status.is(303))
       .check(header("Location").is(route + "/register/confirm-registration").saveAs("ConfirmRegistration"))
 
-  val getConfirmRegistrationPage: HttpRequestBuilder =
-    http("Get Confirm Registration Page")
-      .get(baseUrl + "#{ConfirmRegistration}")
-      .check(status.is(200))
 }
