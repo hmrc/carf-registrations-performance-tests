@@ -28,10 +28,7 @@ class Simulation extends PerformanceTestRunner {
     postAuthLoginPageOrgAutoMatchedCtUtr,
     getIndexPage,
     getIsThisYourBusinessPage,
-    postIsThisYourBusinessPage
-  )
-
-  setup("OrgContactDetails", "Organisation contact Details Journey").withChainedActions(
+    postIsThisYourBusinessPage,
     getYourContactDetailsPage,
     getContactNamePage,
     postContactNamePage,
@@ -70,10 +67,7 @@ class Simulation extends PerformanceTestRunner {
     postNamePage,
     getDateOfBirthPage,
     postDateOfBirthPage,
-    getIdentityConfirmedPage
-  )
-
-  setup("IndContactDetails", "Individual Contact Details Journey").withChainedActions(
+    getIdentityConfirmedPage,
     getIndividualEmailPage,
     postIndividualEmailPage,
     getIndividualHavePhonePage,
@@ -84,5 +78,6 @@ class Simulation extends PerformanceTestRunner {
     postCheckAnswersPage,
     getConfirmRegistrationPage
   )
+
   runSimulation()
 }
