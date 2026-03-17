@@ -18,17 +18,57 @@ package uk.gov.hmrc.perftests.simulation
 
 import uk.gov.hmrc.performance.simulation.PerformanceTestRunner
 import uk.gov.hmrc.perftests.requests.IndRegistrationRequests._
-import uk.gov.hmrc.perftests.requests.OrgRegistrationRequests.{getConfirmRegistrationPage, _}
+import uk.gov.hmrc.perftests.requests.OrgRegistrationRequests.{getConfirmRegistrationPage, postOrganisationRegistrationTypePage, _}
 import uk.gov.hmrc.perftests.requests._
 
 class Simulation extends PerformanceTestRunner {
 
-  setup("OrgWithCtAutoMatchUtr", "Organisation with Id (CT-UTR) Journey").withChainedActions(
+  setup("OrgWithCtUtrAutoMatched", "Organisation with Id (CT-UTR) Automatched Journey").withChainedActions(
     getAuthLoginPage,
     postAuthLoginPageOrgAutoMatchedCtUtr,
     getIndexPage,
     getIsThisYourBusinessPage,
-    postIsThisYourBusinessPage,
+    postIsThisYourBusinessPage("org"),
+    getYourContactDetailsPage,
+    getContactNamePage,
+    postContactNamePage,
+    getEmailPage,
+    postEmailPage,
+    getHavePhonePage,
+    postHavePhonePage,
+    getPhonePage,
+    postPhonePage,
+    getHaveSecondContactPage,
+    postHaveSecondContactPage,
+    getSecondContactNamePage,
+    postSecondContactNamePage,
+    getSecondContactEmailPage,
+    postSecondContactEmailPage,
+    getSecondContactHavePhonePage,
+    postSecondContactHavePhonePage,
+    getSecondContactPhonePage,
+    postSecondContactPhonePage,
+    getCheckAnswerPage,
+    postCheckAnswerPage,
+    getConfirmRegistrationPage
+  )
+
+  setup("OrgWithCtUtrNonAutoMatched", "Organisation with Id (CT-UTR) Non-automatched Journey").withChainedActions(
+    getAuthLoginPage,
+    postAuthLoginPageOrgNonAutoMatchedCtUtr,
+    getIndexPage,
+    getOrganisationRegistrationTypePage,
+    postOrganisationRegistrationTypePage,
+    getRegisteredAddressInUkPage,
+    postRegisteredAddressInUkPage,
+    getHaveUtrPage,
+    postHaveUtrPage,
+    getUtrPage,
+    postUtrPage("org"),
+    getBusinessNamePage,
+    postBusinessNamePage,
+    getIsThisYourBusinessPage,
+    postIsThisYourBusinessPage("org"),
     getYourContactDetailsPage,
     getContactNamePage,
     postContactNamePage,
@@ -58,7 +98,7 @@ class Simulation extends PerformanceTestRunner {
     postAuthLoginPageIndividualWithNino,
     getIndexPage,
     getIndividualRegistrationType,
-    postIndividualRegistrationType,
+    postIndividualRegistrationTypePage("ind"),
     getHaveNiNumberPage,
     postHaveNiNumberPage,
     getNiNumberPage,
@@ -68,6 +108,33 @@ class Simulation extends PerformanceTestRunner {
     getDateOfBirthPage,
     postDateOfBirthPage,
     getIdentityConfirmedPage,
+    getIndividualEmailPage,
+    postIndividualEmailPage,
+    getIndividualHavePhonePage,
+    postIndividualHavePhonePage,
+    getIndividualPhonePage,
+    postIndividualPhonePage,
+    getCheckAnswersPage,
+    postCheckAnswersPage,
+    getConfirmRegistrationPage
+  )
+
+  setup("SoleTraderWithUtr", "Sole Trader with Utr Journey").withChainedActions(
+    getAuthLoginPage,
+    postAuthLoginPage,
+    getIndexPage,
+    getIndividualRegistrationType,
+    postIndividualRegistrationTypePage("st"),
+    getRegisteredAddressInUkPage,
+    postRegisteredAddressInUkPage,
+    getHaveUtrPage,
+    postHaveUtrPage,
+    getUtrPage,
+    postUtrPage("st"),
+    getYourNamePage,
+    postYourNamePage,
+    getIsThisYourBusinessPage,
+    postIsThisYourBusinessPage("st"),
     getIndividualEmailPage,
     postIndividualEmailPage,
     getIndividualHavePhonePage,

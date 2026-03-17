@@ -45,19 +45,38 @@ object IndRegistrationRequests extends ServicesConfiguration {
       .check(status.is(303))
       .check(header("Location").is(baseUrl + route).saveAs("AuthLoginForCarf"))
 
+  val postAuthLoginPage: HttpRequestBuilder =
+    http("Post Auth login page")
+      .post(baseUrlAuth + "/auth-login-stub/gg-sign-in")
+      .formParam("authorityId", "")
+      .formParam("credentialStrength", "strong")
+      .formParam("excludeGnapToken", "false")
+      .formParam("confidenceLevel", "50")
+      .formParam("credentialRole", "User")
+      .formParam("email", "user@test.com")
+      .formParam("affinityGroup", "Individual")
+      .formParam("redirectionUrl", baseUrl + route)
+      .check(status.is(303))
+      .check(header("Location").is(baseUrl + route).saveAs("AuthLoginForCarf"))
+
   val getIndividualRegistrationType: HttpRequestBuilder =
     http("Get Individual Registration Type Page")
       .get(baseUrl + route + "/register/individual-registration-type")
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
-  val postIndividualRegistrationType: HttpRequestBuilder =
+  def postIndividualRegistrationTypePage(answer: String): HttpRequestBuilder = {
+    val registrationType = if (answer == "ind") "IndividualNotConnectedToABusiness" else "IndividualSoleTrader"
+    val expectedRedirect = if (answer == "ind") route + "/register/have-ni-number" else route + "/register/registered-address-in-uk"
+    val redirectPage = if (answer == "ind") "HaveNiNumber" else "RegisteredAddressInUk"
+
     http("Post Individual Registration Type Page")
       .post(baseUrl + route + "/register/individual-registration-type")
       .formParam("csrfToken", "#{csrfToken}")
-      .formParam("individualRegistrationType", "IndividualNotConnectedToABusiness")
+      .formParam("individualRegistrationType", registrationType)
       .check(status.is(303))
-      .check(header("Location").is(route + "/register/have-ni-number").saveAs("HaveNiNumber"))
+      .check(header("Location").is(expectedRedirect).saveAs(redirectPage))
+  }
 
   val getHaveNiNumberPage: HttpRequestBuilder =
     http("Get Have Ni Number Page")

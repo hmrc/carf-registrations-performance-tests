@@ -36,7 +36,7 @@ object OrgRegistrationRequests extends ServicesConfiguration {
       .check(status.is(200))
 
   val postAuthLoginPageOrgAutoMatchedCtUtr: HttpRequestBuilder =
-    http("Post Auth login page for Auto matched CT UTR")
+    http("Post Auth login page for Auto matched Org")
       .post(baseUrlAuth + "/auth-login-stub/gg-sign-in")
       .formParam("authorityId", "")
       .formParam("credentialStrength", "strong")
@@ -54,16 +54,131 @@ object OrgRegistrationRequests extends ServicesConfiguration {
       .check(status.is(303))
       .check(header("Location").is(baseUrl + route).saveAs("AuthLoginForCarf"))
 
+  val postAuthLoginPageOrgNonAutoMatchedCtUtr: HttpRequestBuilder =
+    http("Post Auth login page for Non Auto matched Org with CT UTR")
+      .post(baseUrlAuth + "/auth-login-stub/gg-sign-in")
+      .formParam("authorityId", "")
+      .formParam("credentialStrength", "strong")
+      .formParam("excludeGnapToken", "false")
+      .formParam("confidenceLevel", "50")
+      .formParam("credentialRole", "User")
+      .formParam("email", "user@test.com")
+      .formParam("affinityGroup", "Organisation")
+      .formParam("redirectionUrl", baseUrl + route)
+      .check(status.is(303))
+      .check(header("Location").is(baseUrl + route).saveAs("AuthLoginForCarf"))
+
   val getIndexPage: HttpRequestBuilder =
     http("Get Index Page")
       .get(baseUrl + route)
       .check(status.is(303))
+
+  val getOrganisationRegistrationTypePage: HttpRequestBuilder =
+    http("Get Organisation Registration Type Page")
+      .get(baseUrl + route + "/register/organisation-registration-type")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postOrganisationRegistrationTypePage: HttpRequestBuilder =
+    http("Post Organisation Registration Type Page")
+      .post(baseUrl + route + "/register/organisation-registration-type")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "OrganisationLimitedCompany")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/registered-address-in-uk").saveAs("RegisteredAddressInUk"))
+
+  val getRegisteredAddressInUkPage: HttpRequestBuilder =
+    http("Get Registered Address In Uk Page")
+      .get(baseUrl + "#{RegisteredAddressInUk}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postRegisteredAddressInUkPage: HttpRequestBuilder =
+    http("Post Registered Address In Uk Page")
+      .post(baseUrl + "#{RegisteredAddressInUk}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "false")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/have-utr").saveAs("HaveUtr"))
+
+  val getHaveUtrPage: HttpRequestBuilder =
+    http("Get Have UTR Page")
+      .get(baseUrl + "#{HaveUtr}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postHaveUtrPage: HttpRequestBuilder =
+    http("Post Have UTR Page")
+      .post(baseUrl + "#{HaveUtr}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "true")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/utr").saveAs("Utr"))
+
+  val getUtrPage: HttpRequestBuilder =
+    http("Get UTR Page")
+      .get(baseUrl + "#{Utr}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  def postUtrPage(answer: String): HttpRequestBuilder = {
+    val expectedRedirect = if (answer == "org") route + "/register/business-name" else route + "/register/your-name"
+    val redirectPage = if (answer == "org") "BusinessName" else "YourName"
+
+    http("Post UTR Page")
+      .post(baseUrl + "#{Utr}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "1234567890k")
+      .check(status.is(303))
+      .check(header("Location").is(expectedRedirect).saveAs(redirectPage))
+  }
+
+  val getBusinessNamePage: HttpRequestBuilder =
+    http("Get Business Name Page")
+      .get(baseUrl + "#{BusinessName}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postBusinessNamePage: HttpRequestBuilder =
+    http("Post Business Name Page")
+      .post(baseUrl + "#{BusinessName}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "Test company")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/is-this-your-business").saveAs("IsThisYourBusiness"))
+
+  val getYourNamePage: HttpRequestBuilder =
+    http("Get Your Name Page")
+      .get(baseUrl + "#{YourName}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postYourNamePage: HttpRequestBuilder =
+    http("Post Your Name Page")
+      .post(baseUrl + "#{YourName}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("firstName", "Carf")
+      .formParam("lastName", "Tester")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/is-this-your-business").saveAs("IsThisYourBusiness"))
 
   val getIsThisYourBusinessPage: HttpRequestBuilder =
     http("Get Is This Your Business Page")
       .get(baseUrl + route + "/register/is-this-your-business")
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  def postIsThisYourBusinessPage(answer: String): HttpRequestBuilder = {
+    val expectedRedirect = if (answer == "org") route + "/register/your-contact-details" else route + "/register/individual-email"
+    val redirectPage = if (answer == "org") "YourContactDetails" else "IndividualEmailPage"
+
+    http("Post Is This Your Business Page")
+      .post(baseUrl + route + "/register/is-this-your-business")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "true")
+      .check(status.is(303))
+      .check(header("Location").is(expectedRedirect).saveAs(redirectPage))
+  }
 
   val postIsThisYourBusinessPage: HttpRequestBuilder =
     http("Post Is This Your Business Page")
