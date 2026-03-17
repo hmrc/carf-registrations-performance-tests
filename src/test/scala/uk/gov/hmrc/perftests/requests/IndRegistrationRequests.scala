@@ -59,21 +59,6 @@ object IndRegistrationRequests extends ServicesConfiguration {
       .check(status.is(303))
       .check(header("Location").is(route + "/register/have-ni-number").saveAs("HaveNiNumber"))
 
-/*  val postIndividualRegistrationTypeWithPrint: ChainBuilder =
-    exec(postIndividualRegistrationType)
-      .exec { session =>
-        println("POST URL *** " + baseUrl + route + "/register/individual-registration-type")
-        println(
-          "Request Body *** csrfToken=" +
-            session("csrfToken").asOption[String].getOrElse("NOT FOUND") +
-            ", value=IndividualNotConnectedToABusiness"
-        )
-        println("Actual Location Header *** " + session("actualLocation").asOption[String].getOrElse("NOT FOUND"))
-        println("Expected Location Header *** " + route + "/register/have-ni-number")
-        println("Response Body *** " + session("responseBody").asOption[String].getOrElse("NOT FOUND"))
-        session
-      }*/
-
   val getHaveNiNumberPage: HttpRequestBuilder =
     http("Get Have Ni Number Page")
       .get(baseUrl + "#{HaveNiNumber}")
@@ -197,5 +182,4 @@ object IndRegistrationRequests extends ServicesConfiguration {
     http("Get Confirm Registration Page")
       .get(baseUrl + "#{ConfirmRegistration}")
       .check(status.is(200))
-      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 }

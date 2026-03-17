@@ -58,7 +58,6 @@ class Simulation extends PerformanceTestRunner {
     postAuthLoginPageIndividualWithNino,
     getIndexPage,
     getIndividualRegistrationType,
-//    postIndividualRegistrationTypeWithPrint,
     postIndividualRegistrationType,
     getHaveNiNumberPage,
     postHaveNiNumberPage,

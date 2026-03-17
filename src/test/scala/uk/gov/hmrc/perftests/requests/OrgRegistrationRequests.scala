@@ -75,7 +75,7 @@ object OrgRegistrationRequests extends ServicesConfiguration {
 
   val getYourContactDetailsPage: HttpRequestBuilder =
     http("Get Your Contact Details Page")
-      .get(baseUrl + route + "/register/your-contact-details")
+      .get(baseUrl + "#{YourContactDetails}")
       .check(status.is(200))
 
   val getContactNamePage: HttpRequestBuilder =
@@ -94,13 +94,13 @@ object OrgRegistrationRequests extends ServicesConfiguration {
 
   val getEmailPage: HttpRequestBuilder =
     http("Get Email Page")
-      .get(baseUrl + route + "/register/email")
+      .get(baseUrl + "#{Email}")
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
   val postEmailPage: HttpRequestBuilder =
     http("Post Email Page")
-      .post(baseUrl + route + "/register/email")
+      .post(baseUrl + "#{Email}")
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", "carfteam@gmail.com")
       .check(status.is(303))
@@ -108,13 +108,13 @@ object OrgRegistrationRequests extends ServicesConfiguration {
 
   val getHavePhonePage: HttpRequestBuilder =
     http("Get Have Phone Page")
-      .get(baseUrl + route + "/register/have-phone")
+      .get(baseUrl + "#{HavePhone}")
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
   val postHavePhonePage: HttpRequestBuilder =
     http("Post Have Phone Page")
-      .post(baseUrl + route + "/register/have-phone")
+      .post(baseUrl + "#{HavePhone}")
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", "true")
       .check(status.is(303))
@@ -122,13 +122,13 @@ object OrgRegistrationRequests extends ServicesConfiguration {
 
   val getPhonePage: HttpRequestBuilder =
     http("Get Phone Page")
-      .get(baseUrl + route + "/register/phone")
+      .get(baseUrl + "#{Phone}")
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
   val postPhonePage: HttpRequestBuilder =
     http("Post Phone Page")
-      .post(baseUrl + route + "/register/phone")
+      .post(baseUrl + "#{Phone}")
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", "1234567890")
       .check(status.is(303))
@@ -136,13 +136,13 @@ object OrgRegistrationRequests extends ServicesConfiguration {
 
   val getHaveSecondContactPage: HttpRequestBuilder =
     http("Get Have Second Contact Page")
-      .get(baseUrl + route + "/register/have-second-contact")
+      .get(baseUrl + "#{HaveSecondContact}")
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
   val postHaveSecondContactPage: HttpRequestBuilder =
     http("Post Have Second Contact Page")
-      .post(baseUrl + route + "/register/have-second-contact")
+      .post(baseUrl + "#{HaveSecondContact}")
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", "true")
       .check(status.is(303))
@@ -150,13 +150,13 @@ object OrgRegistrationRequests extends ServicesConfiguration {
 
   val getSecondContactNamePage: HttpRequestBuilder =
     http("Get Second Contact Name Page")
-      .get(baseUrl + route + "/register/second-contact-name")
+      .get(baseUrl + "#{SecondContactName}")
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
   val postSecondContactNamePage: HttpRequestBuilder =
     http("Post Second Contact Name Page")
-      .post(baseUrl + route + "/register/second-contact-name")
+      .post(baseUrl + "#{SecondContactName}")
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", "Test Second")
       .check(status.is(303))
@@ -164,13 +164,13 @@ object OrgRegistrationRequests extends ServicesConfiguration {
 
   val getSecondContactEmailPage: HttpRequestBuilder =
     http("Get Second Contact Email Page")
-      .get(baseUrl + route + "/register/second-contact-email")
+      .get(baseUrl + "#{SecondContactEmail}")
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
   val postSecondContactEmailPage: HttpRequestBuilder =
     http("Post Second Contact Email Page")
-      .post(baseUrl + route + "/register/second-contact-email")
+      .post(baseUrl + "#{SecondContactEmail}")
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", "Carftestsecond@gmail.com")
       .check(status.is(303))
@@ -178,13 +178,13 @@ object OrgRegistrationRequests extends ServicesConfiguration {
 
   val getSecondContactHavePhonePage: HttpRequestBuilder =
     http("Get Second Contact Have Phone Page")
-      .get(baseUrl + route + "/register/second-contact-have-phone")
+      .get(baseUrl + "#{SecondContactHavePhone}")
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
   val postSecondContactHavePhonePage: HttpRequestBuilder =
     http("Post Second Contact Have Phone Page")
-      .post(baseUrl + route + "/register/second-contact-have-phone")
+      .post(baseUrl + "#{SecondContactHavePhone}")
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", "true")
       .check(status.is(303))
@@ -192,13 +192,13 @@ object OrgRegistrationRequests extends ServicesConfiguration {
 
   val getSecondContactPhonePage: HttpRequestBuilder =
     http("Get Second Contact Phone Page")
-      .get(baseUrl + route + "/register/second-contact-phone")
+      .get(baseUrl + "#{SecondContactPhone}")
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
   val postSecondContactPhonePage: HttpRequestBuilder =
     http("Post Second Contact Phone Page")
-      .post(baseUrl + route + "/register/second-contact-phone")
+      .post(baseUrl + "#{SecondContactPhone}")
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", "1234567890")
       .check(status.is(303))
@@ -206,13 +206,13 @@ object OrgRegistrationRequests extends ServicesConfiguration {
 
   val getCheckAnswerPage: HttpRequestBuilder =
     http("Get Check Answer Page")
-      .get(baseUrl + route + "/register/check-answers")
+      .get(baseUrl + "#{CheckYourAnswer}")
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
   val postCheckAnswerPage: HttpRequestBuilder =
     http("Post Check Answer Page")
-      .post(baseUrl + route + "/register/check-answers")
+      .post(baseUrl + "#{CheckYourAnswer}")
       .formParam("csrfToken", "#{csrfToken}")
       .check(status.is(303))
       .check(header("Location").is(route + "/register/confirm-registration").saveAs("ConfirmRegistration"))
