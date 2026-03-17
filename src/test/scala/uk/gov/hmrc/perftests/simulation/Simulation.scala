@@ -17,12 +17,13 @@
 package uk.gov.hmrc.perftests.simulation
 
 import uk.gov.hmrc.performance.simulation.PerformanceTestRunner
-import uk.gov.hmrc.perftests.requests.RegistrationRequests._
+import uk.gov.hmrc.perftests.requests.IndRegistrationRequests._
+import uk.gov.hmrc.perftests.requests.OrgRegistrationRequests.{getConfirmRegistrationPage, _}
 import uk.gov.hmrc.perftests.requests._
 
 class Simulation extends PerformanceTestRunner {
 
-  setup("OrgWithCtAutoMatchUtr", "Org with Id (CT-UTR) Journey").withChainedActions(
+  setup("OrgWithCtAutoMatchUtr", "Organisation with Id (CT-UTR) Journey").withChainedActions(
     getAuthLoginPage,
     postAuthLoginPageOrgAutoMatchedCtUtr,
     getIndexPage,
@@ -51,5 +52,32 @@ class Simulation extends PerformanceTestRunner {
     postCheckAnswerPage,
     getConfirmRegistrationPage
   )
+
+  setup("IndWithNino", "Individual with Nino Journey").withChainedActions(
+    getAuthLoginPage,
+    postAuthLoginPageIndividualWithNino,
+    getIndexPage,
+    getIndividualRegistrationType,
+    postIndividualRegistrationType,
+    getHaveNiNumberPage,
+    postHaveNiNumberPage,
+    getNiNumberPage,
+    postNiNumberPage,
+    getNamePage,
+    postNamePage,
+    getDateOfBirthPage,
+    postDateOfBirthPage,
+    getIdentityConfirmedPage,
+    getIndividualEmailPage,
+    postIndividualEmailPage,
+    getIndividualHavePhonePage,
+    postIndividualHavePhonePage,
+    getIndividualPhonePage,
+    postIndividualPhonePage,
+    getCheckAnswersPage,
+    postCheckAnswersPage,
+    getConfirmRegistrationPage
+  )
+
   runSimulation()
 }
