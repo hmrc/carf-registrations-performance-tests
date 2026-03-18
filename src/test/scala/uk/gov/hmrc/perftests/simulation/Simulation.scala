@@ -25,7 +25,6 @@ class Simulation extends PerformanceTestRunner {
 
   setup("OrgWithCtUtrAutoMatched", "Organisation with Id (CT-UTR) Automatched Journey").withChainedActions(
     getAuthLoginPage,
-    //postAuthLoginPageOrgAutoMatchedCtUtr,
     postAuthLoginPage("automatched"),
     getIndexPage,
     getIsThisYourBusinessPage,
@@ -56,7 +55,6 @@ class Simulation extends PerformanceTestRunner {
 
   setup("OrgWithCtUtrNonAutoMatched", "Organisation with Id (CT-UTR) Non-automatched Journey").withChainedActions(
     getAuthLoginPage,
-    //postAuthLoginPageOrgNonAutoMatchedCtUtr,
     postAuthLoginPage("nonautomatched"),
     getIndexPage,
     getOrganisationRegistrationTypePage,
@@ -97,7 +95,6 @@ class Simulation extends PerformanceTestRunner {
 
   setup("IndWithNino", "Individual with Nino Journey").withChainedActions(
     getAuthLoginPage,
-    //postAuthLoginPage,
     postAuthLoginPage("individual"),
     getIndexPage,
     getIndividualRegistrationType,
@@ -124,7 +121,6 @@ class Simulation extends PerformanceTestRunner {
 
   setup("SoleTraderWithUtr", "Sole Trader with Utr Journey").withChainedActions(
     getAuthLoginPage,
-    //postAuthLoginPage,
     postAuthLoginPage("individual"),
     getIndexPage,
     getIndividualRegistrationType,
