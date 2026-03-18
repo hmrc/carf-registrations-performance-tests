@@ -30,20 +30,6 @@ object IndRegistrationRequests extends ServicesConfiguration {
 
   def inputSelectorByName(name: String): Expression[String] = s"input[name='$name']"
 
-  /*val postAuthLoginPage: HttpRequestBuilder =
-    http("Post Auth login page")
-      .post(baseUrlAuth + "/auth-login-stub/gg-sign-in")
-      .formParam("authorityId", "")
-      .formParam("credentialStrength", "strong")
-      .formParam("excludeGnapToken", "false")
-      .formParam("confidenceLevel", "50")
-      .formParam("credentialRole", "User")
-      .formParam("email", "user@test.com")
-      .formParam("affinityGroup", "Individual")
-      .formParam("redirectionUrl", baseUrl + route)
-      .check(status.is(303))
-      .check(header("Location").is(baseUrl + route).saveAs("AuthLoginForCarf"))*/
-
   val getIndividualRegistrationType: HttpRequestBuilder =
     http("Get Individual Registration Type Page")
       .get(baseUrl + route + "/register/individual-registration-type")
@@ -168,18 +154,5 @@ object IndRegistrationRequests extends ServicesConfiguration {
       .formParam("value", "1234567890")
       .check(status.is(303))
       .check(header("Location").is(route + "/register/check-answers").saveAs("CheckAnswers"))
-
-  val getCheckAnswersPage: HttpRequestBuilder =
-    http("Get Check Answers Page")
-      .get(baseUrl + "#{CheckAnswers}")
-      .check(status.is(200))
-      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
-
-  val postCheckAnswersPage: HttpRequestBuilder =
-    http("Post Check Answers Page")
-      .post(baseUrl + "#{CheckAnswers}")
-      .formParam("csrfToken", "#{csrfToken}")
-      .check(status.is(303))
-      .check(header("Location").is(route + "/register/confirm-registration").saveAs("ConfirmRegistration"))
 
 }

@@ -18,7 +18,7 @@ package uk.gov.hmrc.perftests.simulation
 
 import uk.gov.hmrc.performance.simulation.PerformanceTestRunner
 import uk.gov.hmrc.perftests.requests.IndRegistrationRequests._
-import uk.gov.hmrc.perftests.requests.OrgRegistrationRequests.{getConfirmRegistrationPage, _}
+import uk.gov.hmrc.perftests.requests.OrgRegistrationRequests._
 import uk.gov.hmrc.perftests.requests._
 
 class Simulation extends PerformanceTestRunner {
@@ -117,8 +117,8 @@ class Simulation extends PerformanceTestRunner {
     postIndividualHavePhonePage,
     getIndividualPhonePage,
     postIndividualPhonePage,
-    getCheckAnswersPage,
-    postCheckAnswersPage,
+    getCheckAnswerPage,
+    postCheckAnswerPage,
     getConfirmRegistrationPage
   )
 
@@ -145,8 +145,8 @@ class Simulation extends PerformanceTestRunner {
     postIndividualHavePhonePage,
     getIndividualPhonePage,
     postIndividualPhonePage,
-    getCheckAnswersPage,
-    postCheckAnswersPage,
+    getCheckAnswerPage,
+    postCheckAnswerPage,
     getConfirmRegistrationPage
   )
 
