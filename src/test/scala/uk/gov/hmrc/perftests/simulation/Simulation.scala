@@ -100,7 +100,7 @@ class Simulation extends PerformanceTestRunner {
     getIndividualRegistrationType,
     postIndividualRegistrationTypePage("ind"),
     getHaveNiNumberPage,
-    postHaveNiNumberPage,
+    postHaveNiNumberPage(true),
     getNiNumberPage,
     postNiNumberPage,
     getNamePage,
@@ -117,6 +117,34 @@ class Simulation extends PerformanceTestRunner {
     getCheckAnswerPage,
     postCheckAnswerPage,
     getConfirmRegistrationPage
+  )
+
+  setup("IndWithoutNinoInUK", "Individual without Nino UK Journey").withChainedActions(
+    getAuthLoginPage,
+    postAuthLoginPage("individual"),
+    getIndexPage,
+    getIndividualRegistrationType,
+    postIndividualRegistrationTypePage("ind"),
+    getHaveNiNumberPage,
+    postHaveNiNumberPage(false),
+    getIndividualWithoutIdNamePage,
+    postIndividualWithoutIdNamePage,
+    getIndividualWithoutIdDateOfBirthPage,
+    postIndividualWithoutIdDateOfBirthPage,
+    getIndividualWithoutIdWhereDoYouLivePage,
+    postIndividualWithoutIdWhereDoYouLivePage,
+    getIndividualWithoutIdFindAddressPage,
+    postIndividualWithoutIdFindAddressPage,
+    getIndividualWithoutIdReviewAddressPage,
+    getIndividualEmailPage,
+    postIndividualEmailPage,
+    getIndividualHavePhonePage,
+    postIndividualHavePhonePage,
+    getIndividualPhonePage,
+    postIndividualPhonePage,
+    getCheckAnswerPage/*,
+    postCheckAnswerPage,
+    getConfirmRegistrationPage*/
   )
 
   setup("SoleTraderWithUtr", "Sole Trader with Utr Journey").withChainedActions(
