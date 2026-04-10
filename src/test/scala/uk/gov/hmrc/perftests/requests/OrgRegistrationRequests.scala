@@ -38,7 +38,7 @@ object OrgRegistrationRequests extends ServicesConfiguration {
   def postAuthLoginPage(userType: String): HttpRequestBuilder = {
     val (requestName, affinityGroup, hasCtUtr) = userType match {
       case "automatched" => ("Post Auth login page for Auto matched Org", "Organisation", true)
-      case "nonautomatched" => ("Post Auth login page for Non Auto matched Org with CT UTR", "Organisation", false)
+      case "otherOrg" => ("Post Auth login page for Non Auto matched Org with CT UTR", "Organisation", false)
       case "individual" => ("Post Auth login page", "Individual", false)
       case _ => ("Post Auth login page", "Individual", false)
     }
@@ -109,13 +109,79 @@ object OrgRegistrationRequests extends ServicesConfiguration {
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
-  val postHaveUtrPage: HttpRequestBuilder =
+  def postHaveUtrPage(answer: Boolean, user: String): HttpRequestBuilder = {
+    val (expectedRedirect, redirectPage) = (user, answer) match {
+      case ("st" | "org", true)  => (route + "/register/utr", "Utr")
+      case ("st", false)         => (route + "/register/have-ni-number", "HaveNiNumber")
+      case ("org", false)        => (route + "/register/business-without-id/business-name", "BusinessWithoutIDBusinessName")
+      case _                     => (route + "/register/utr", "Utr") // fallback
+    }
+
     http("Post Have UTR Page")
       .post(baseUrl + "#{HaveUtr}")
       .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", answer)
+      .check(status.is(303))
+      .check(header("Location").is(expectedRedirect).saveAs(redirectPage))
+  }
+
+  val getBusinessWithoutIDBusinessName: HttpRequestBuilder =
+    http("Get Business Without ID Business Name Page")
+      .get(baseUrl + "#{BusinessWithoutIDBusinessName}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postBusinessWithoutIDBusinessName: HttpRequestBuilder =
+    http("Post Business Without ID Business Name Page")
+      .post(baseUrl + "#{BusinessWithoutIDBusinessName}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "Disney Land Limited")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/business-without-id/have-trading-name").saveAs("HaveTradingName"))
+
+  val getHaveTradingName: HttpRequestBuilder =
+    http("Get Business Without ID Have Trading Name Page")
+      .get(baseUrl + "#{HaveTradingName}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postHaveTradingName: HttpRequestBuilder =
+    http("Post Business Without ID Have Trading Name Page")
+      .post(baseUrl + "#{HaveTradingName}")
+      .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", "true")
       .check(status.is(303))
-      .check(header("Location").is(route + "/register/utr").saveAs("Utr"))
+      .check(header("Location").is(route + "/register/business-without-id/trading-name").saveAs("TradingName"))
+
+  val getTradingName: HttpRequestBuilder =
+    http("Get Business Without ID Trading Name Page")
+      .get(baseUrl + "#{TradingName}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postTradingName: HttpRequestBuilder =
+    http("Post Business Without ID Trading Name Page")
+      .post(baseUrl + "#{TradingName}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "Disney Land Limited")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/business-without-id/business-address").saveAs("BusinessAddress"))
+
+  val getBusinessAddress: HttpRequestBuilder =
+    http("Get Business Address Page")
+      .get(baseUrl + "#{BusinessAddress}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postBusinessAddress: HttpRequestBuilder =
+    http("Post Business Address Page")
+      .post(baseUrl + "#{BusinessAddress}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("addressLine1", "Line 1")
+      .formParam("townOrCity", "Fantasy Town")
+      .formParam("country", "AL")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/your-contact-details").saveAs("YourContactDetails"))
 
   val getUtrPage: HttpRequestBuilder =
     http("Get UTR Page")

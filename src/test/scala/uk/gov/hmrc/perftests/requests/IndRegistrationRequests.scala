@@ -55,13 +55,17 @@ object IndRegistrationRequests extends ServicesConfiguration {
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
-  val postHaveNiNumberPage: HttpRequestBuilder =
+  def postHaveNiNumberPage(answer: Boolean): HttpRequestBuilder = {
+    val expectedRedirect = if (answer) route + "/register/ni-number" else route + "/register/individual-without-id/name"
+    val redirectPage = if (answer) "NiNumber" else "IndividualWithoutIDName"
+
     http("Post Have Ni Number Page")
       .post(baseUrl + "#{HaveNiNumber}")
       .formParam("csrfToken", "#{csrfToken}")
-      .formParam("value", "true")
+      .formParam("value", answer)
       .check(status.is(303))
-      .check(header("Location").is(route + "/register/ni-number").saveAs("NiNumber"))
+      .check(header("Location").is(expectedRedirect).saveAs(redirectPage))
+  }
 
   val getNiNumberPage: HttpRequestBuilder =
     http("Get Ni Number Page")
@@ -111,6 +115,91 @@ object IndRegistrationRequests extends ServicesConfiguration {
   val getIdentityConfirmedPage: HttpRequestBuilder =
     http("Get Identity Confirmed Page")
       .get(baseUrl + "#{IdentityConfirmed}")
+      .check(status.is(200))
+
+  val getIndividualWithoutIdNamePage: HttpRequestBuilder =
+    http("Get Individual Without ID Name Page")
+      .get(baseUrl + "#{IndividualWithoutIDName}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postIndividualWithoutIdNamePage: HttpRequestBuilder =
+    http("Post Individual Without ID Name Page")
+      .post(baseUrl + "#{IndividualWithoutIDName}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("givenName", "John")
+      .formParam("familyName", "Doe")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/individual-without-id/date-of-birth").saveAs("IndividualWithoutIdDateOfBirth"))
+
+  val getIndividualWithoutIdDateOfBirthPage: HttpRequestBuilder =
+    http("Get Individual Without ID Date of Birth Page")
+      .get(baseUrl + "#{IndividualWithoutIdDateOfBirth}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postIndividualWithoutIdDateOfBirthPage: HttpRequestBuilder =
+    http("Post Individual Without ID Date of Birth Page")
+      .post(baseUrl + "#{IndividualWithoutIdDateOfBirth}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value.day", "1")
+      .formParam("value.month", "1")
+      .formParam("value.year", "1990")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/individual-without-id/where-do-you-live").saveAs("IndividualWithoutIdWhereDoYouLive"))
+
+  val getIndividualWithoutIdWhereDoYouLivePage: HttpRequestBuilder =
+    http("Get Individual Without ID Where Do You Live Page")
+      .get(baseUrl + "#{IndividualWithoutIdWhereDoYouLive}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  def postIndividualWithoutIdWhereDoYouLivePage(answer: Boolean): HttpRequestBuilder = {
+    val redirectPage = if (answer) "IndividualWithoutIdFindAddress" else "IndividualWithoutIdAddressNonUk"
+    val expectedRedirect = if (answer) route + "/register/individual-without-id/find-address" else route + "/register/individual-without-id/address-non-uk"
+
+    http("Post Individual Without ID Where Do You Live Page")
+      .post(baseUrl + "#{IndividualWithoutIdWhereDoYouLive}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", answer)
+      .check(status.is(303))
+      .check(header("Location").is(expectedRedirect).saveAs(redirectPage))
+  }
+
+  val getIndividualWithoutIdFindAddressPage: HttpRequestBuilder =
+    http("Get Individual Without ID Find Address Page")
+      .get(baseUrl + "#{IndividualWithoutIdFindAddress}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postIndividualWithoutIdFindAddressPage: HttpRequestBuilder =
+    http("Post Individual Without ID Find Address Page")
+      .post(baseUrl + "#{IndividualWithoutIdFindAddress}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("postcode", "LU1 5JP")
+      .formParam("propertyNameOrNumber", "7")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/individual-without-id/review-address").saveAs("IndividualWithoutIdReviewAddress"))
+
+  val getIndividualWithoutIdAddressNonUk: HttpRequestBuilder =
+    http("Get Individual Without ID Address Non UK Page")
+      .get(baseUrl + "#{IndividualWithoutIdAddressNonUk}")
+      .check(status.is(200))
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+
+  val postIndividualWithoutIdAddressNonUk: HttpRequestBuilder =
+    http("Post Individual Without ID Address Non Uk Page")
+      .post(baseUrl + "#{IndividualWithoutIdAddressNonUk}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("addressLine1", "Line 1")
+      .formParam("townOrCity", "Fantasy Town")
+      .formParam("country", "AL")
+      .check(status.is(303))
+      .check(header("Location").is(route + "/register/individual-email").saveAs("IndividualEmailPage"))
+
+  val getIndividualWithoutIdReviewAddressPage: HttpRequestBuilder =
+    http("Get Individual Without ID Review Address Page")
+      .get(baseUrl + "#{IndividualWithoutIdReviewAddress}")
       .check(status.is(200))
 
   val getIndividualEmailPage: HttpRequestBuilder =
