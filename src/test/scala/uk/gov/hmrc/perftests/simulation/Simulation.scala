@@ -184,7 +184,7 @@ class Simulation extends PerformanceTestRunner {
     postIndividualHavePhonePage,
     getIndividualPhonePage,
     postIndividualPhonePage/*,
-    getCheckAnswerPage,
+    getCheckAnswerPage, //TODO: Check why status is 303 instead of 200
     postCheckAnswerPage,
     getConfirmRegistrationPage*/
   )
