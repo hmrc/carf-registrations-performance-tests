@@ -109,9 +109,13 @@ object OrgRegistrationRequests extends ServicesConfiguration {
       .check(status.is(200))
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
 
-  def postHaveUtrPage(answer: Boolean): HttpRequestBuilder = {
-    val expectedRedirect = if (answer) route + "/register/utr" else route + "/register/business-without-id/business-name"
-    val redirectPage = if (answer) "Utr" else "BusinessWithoutIDBusinessName"
+  def postHaveUtrPage(answer: Boolean, user: String): HttpRequestBuilder = {
+    val (expectedRedirect, redirectPage) = (user, answer) match {
+      case ("st" | "org", true)  => (route + "/register/utr", "Utr")
+      case ("st", false)         => (route + "/register/have-ni-number", "HaveNiNumber")
+      case ("org", false)        => (route + "/register/business-without-id/business-name", "BusinessWithoutIDBusinessName")
+      case _                     => (route + "/register/utr", "Utr") // fallback
+    }
 
     http("Post Have UTR Page")
       .post(baseUrl + "#{HaveUtr}")
