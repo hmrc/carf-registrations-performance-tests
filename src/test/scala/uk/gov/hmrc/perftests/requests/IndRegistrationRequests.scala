@@ -202,6 +202,11 @@ object IndRegistrationRequests extends ServicesConfiguration {
       .get(baseUrl + "#{IndividualWithoutIdReviewAddress}")
       .check(status.is(200))
 
+  val getIndividualWithoutIdReviewAddressSubmitPage: HttpRequestBuilder =
+    http("Get Individual Without ID Review Address Submit Page")
+      .get(baseUrl + route + "/register/individual-without-id/review-address-submit")
+      .check(status.is(303))
+
   val getIndividualEmailPage: HttpRequestBuilder =
     http("Get Individual Email Page")
       .get(baseUrl + route + "/register/individual-email")

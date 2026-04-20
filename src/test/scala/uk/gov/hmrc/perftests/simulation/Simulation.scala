@@ -178,15 +178,16 @@ class Simulation extends PerformanceTestRunner {
     getIndividualWithoutIdFindAddressPage,
     postIndividualWithoutIdFindAddressPage, //TODO: Check if postcode can be picked dynamically based on env
     getIndividualWithoutIdReviewAddressPage,
+    getIndividualWithoutIdReviewAddressSubmitPage,
     getIndividualEmailPage,
     postIndividualEmailPage,
     getIndividualHavePhonePage,
     postIndividualHavePhonePage,
     getIndividualPhonePage,
-    postIndividualPhonePage/*,
-    getCheckAnswerPage, //TODO: Check why status is 303 instead of 200
+    postIndividualPhonePage,
+    getCheckAnswerPage,
     postCheckAnswerPage,
-    getConfirmRegistrationPage*/
+    getConfirmRegistrationPage
   )
 
   setup("IndWithoutNinoOutsideUK", "Individual without Nino Outside UK Journey").withChainedActions(
